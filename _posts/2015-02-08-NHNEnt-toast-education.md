@@ -57,6 +57,6 @@ shortUrl: http://goo.gl/JhfZT9
 	-	code Review -> 설계 구조 리팩토링 및 controller -> service로 이동
 	
 1주차부터 5주차를 다시 되새겨 보았습니다. 어떻게 보면 짧은 시간이기도 하고 긴 시간이기도 하지만 다양한 경험을 하였고 기술적으로 많이 배웠다.
-아직 2주정도 남았지만 끝까지 열심히 해야겠다.
+아직 2주정도 남았지만 끝까지 열심히 해야겠다.<br/>
 ![1]({{ site.url }}/assets/1.jpg)
 ![2]({{ site.url }}/assets/2.jpg)
