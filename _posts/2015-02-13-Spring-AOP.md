@@ -27,7 +27,7 @@ com.toast.happiness.controller.BoardController객체 내부의 메소드 중에 
 pointcut 지정자는 아래와 같은 형식이다.
 {% highlight xml %}
 excution(<접근 수정자 패턴><반환 형식 패턴><선언 형식 패턴><메소드 이름 패턴>(<매서드 매개변수 패턴>)<예외 발생 패턴>)
-{% highlight xml %}
+{% endhighlight %}
 
 Ex 다양한 적용
 {% highlight java %}
