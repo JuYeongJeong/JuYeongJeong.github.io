@@ -122,8 +122,8 @@ Ex) segment put method
 실제data가 put이 일어나는 segment put메소드를 보면 lock을 하는것을 볼 수 있습니다. 하나의 segment만 lock되기 때문에 다른 segment는 다른 thread에서 사용 가능하다는 것입니다.
 
 
-
 JAVA8버전에서는 segment개념과 다소 변경된 것들이 있습니다.
+<br>
 EX) java8 ConcurrentHashMap constructor
 {% highlight java %}
    public ConcurrentHashMap(int initialCapacity,
@@ -138,7 +138,7 @@ EX) java8 ConcurrentHashMap constructor
         this.sizeCtl = cap;
     }
 {% endhighlight %}
-java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있다. 자바8에서는 segment별로 HashEntry를 가지고 있는 것이 아니라는 것을 볼 수 있다. 사실상 concurrencyLevel은 table 사이즈 역할과 다름없다고 생각하면 된다.
+java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있다. 자바8에서는 segment별로 HashEntry를 가지고 있는 것이 아니라는 것을 볼 수 있다. 사실상 concurrencyLevel은 table 사이즈 역할과 다름없다고 생각하면 됩니다.
 
 EX) java8 ConcurrentHashMap putVal
 {% highlight java %}
@@ -195,5 +195,5 @@ EX) java8 ConcurrentHashMap putVal
 {% endhighlight %}
 
 putVal메소드 내부를 보면 노드(bucket) 하나마다 동기화가 적용 된것을 볼수 있습니다. 기존에 만들어진 노드를 사용 할 경우에만  동기화가 적용 되는 것을 볼 수 있습니다.
-결론적으로 큰 차이점은  <h4>segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 한번에 많은 Thread에서 접근 할 수 있도록 한것으로 분석됩니다.</h4>
+결론적으로 큰 차이점은 segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 한번에 많은 Thread에서 접근 할 수 있도록 한것으로 분석됩니다.
 
