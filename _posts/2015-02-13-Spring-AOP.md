@@ -2,7 +2,7 @@
 layout: post
 title:  "Spring AOP "
 date:   2015-02-13 19:00:00
-categories: jekyll,themes
+categories: Spring,AOP
 tags: omg,shit
 shortUrl: http://goo.gl/JhfZT9
 ---

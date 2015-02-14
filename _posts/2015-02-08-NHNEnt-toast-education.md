@@ -2,7 +2,7 @@
 layout: post
 title:  "toast rookie"
 date:   2015-02-08 20:00:00
-categories: jekyll,themes
+categories: toast
 tags: omg,shit
 shortUrl: http://goo.gl/JhfZT9
 ---

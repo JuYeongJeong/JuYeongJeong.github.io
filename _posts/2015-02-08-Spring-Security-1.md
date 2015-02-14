@@ -2,7 +2,7 @@
 layout: post
 title:  "Spring Security 1장"
 date:   2015-02-08 19:00:00
-categories: jekyll,themes
+categories: Spring,Security
 tags: omg,shit
 shortUrl: http://goo.gl/JhfZT9
 ---
