@@ -9,10 +9,10 @@ shortUrl: http://goo.gl/JhfZT9
 java8 ConcurrentHashMap
 
 <h1>ConcurrentHashMap</h1>
-ConcurrentHashMap 주로 동기화를 위해 사용되는 map이다. 기존의 HashMap은 동기화 문제가 있었고, 이문제를 해결 하기 위해서는 HashTable을 사용하였다. 하지만 동기화에 있어서 매우 비 효율적이었다. 이러한 문제점을 ConcurrentHashMap이 해결 하였다.
+ConcurrentHashMap 주로 동기화를 위해 사용되는 map입니다. 기존의 HashMap은 동기화 문제가 있었고, 이 문제를 해결 하기 위해서 HashTable이 나왔습니다. 
+하지만 Hashtable은 동기화에 있어서 메소드 단위라 매우 비 효율적인 문제점이 있었고 자바1.6버전부터는 동기화와 속도적인 측면을 모두 소화 해줄  ConcurrentHashMap이 나왔습니다.
 
 <h1>HashTable VS ConcurrentHashMap</h1>
-
 HashTable은 동기화를 하기 위해 아래와 메소드 전체에 Lock이 걸려있다. 이러한 방법한 간편하고 안전하겠지만 많은 사용자가 있을 경우 사용성이 떨어지게 됩니다. HashTable을 참조하는 객체가 많을 수록 선점하기 위해 대기하는 시간이 늘어나게 됩니다.
 EX) HashTable Lock Metode
 {% highlight java %}
@@ -46,8 +46,8 @@ EX) JAVA8 ConcurrentHashMap putAll Method
 
 <h1>JAVA8 ConcurrentHashMap과 이전 버전과의 차이점</h1>
 
-java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 segment별로 HashEntry를 가지고 있는 것을 볼 수 있었다. 
-concurrencyLevel은 원하는 segment의 사이즈 이다. default로 16Size이다.
+java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 segment별로 HashEntry를 가지고 있는 것을 볼 수 있었습니다.
+concurrencyLevel은 원하는 segment의 사이즈 이고 default로는 16Size입니다.
 
 EX) java7 ConcurrentHashMap constructor
 {% highlight java %}
@@ -64,17 +64,20 @@ EX) java7 ConcurrentHashMap constructor
         this.segments = ss;
     }
 {% endhighlight %}
-위의 코드를 보면 segment를 size만큼 만들고 그 내부에 hashEntry를 만드는 것을 볼 수 있다.
+위의 코드를 보면 segment를 size만큼 만들고 그 내부에 hashEntry를 만드는 것을 볼 수 있습니다.
 
+EX) segment와 table의 관계
 ![1]({{ site.url }}/assets/segment.jpg)
+위의 그림처럼 segment내부에 table이 있습니다.
+
 
 Ex) segment put method
 {% highlight java %}
  final V put(K key, int hash, V value, boolean onlyIfAbsent) {
             HashEntry<K,V> node = tryLock() ? null :
-                scanAndLockForPut(key, hash, value);//<h3>segment lock</h3>
+                scanAndLockForPut(key, hash, value);//segment 객체 자체를 lock을 합니다.
             V oldValue;
-            try {
+            try {//실제로 data를 put 합니다.
                 HashEntry<K,V>[] tab = table;
                 int index = (tab.length - 1) & hash;
                 HashEntry<K,V> first = entryAt(tab, index);
@@ -114,12 +117,11 @@ Ex) segment put method
             return oldValue;
         }
 {% endhighlight %}
-실제data가 put이 일어나는 segment put메소드를 보면 lock을 하는것을 볼 수 있다. 하나의 segment만 lock되기 때문에 다른 segment는 다른 thread에서 사용 가능하다는 것이다.
+실제data가 put이 일어나는 segment put메소드를 보면 lock을 하는것을 볼 수 있습니다. 하나의 segment만 lock되기 때문에 다른 segment는 다른 thread에서 사용 가능하다는 것입니다.
 
 
 
-
-JAVA8버전에서는 segment개념과 다소 변경 된것들이 있다.
+JAVA8버전에서는 segment개념과 다소 변경된 것들이 있습니다.
 EX) java8 ConcurrentHashMap constructor
 {% highlight java %}
    public ConcurrentHashMap(int initialCapacity,
@@ -145,17 +147,17 @@ EX) java8 ConcurrentHashMap putVal
         for (Node<K,V>[] tab = table;;) {
             Node<K,V> f; int n, i, fh;
             if (tab == null || (n = tab.length) == 0)
-                tab = initTable();
+                tab = initTable();//table이 없을 경우 table생성
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
                 if (casTabAt(tab, i, null,
                              new Node<K,V>(hash, key, value, null)))
-                    break;                   // no lock when adding to empty bin
+                    break;                   // 처음으로 생성된 노드는 동기화 할 필요가 없기때문에 하지 않았습니다.
             }
             else if ((fh = f.hash) == MOVED)
                 tab = helpTransfer(tab, f);
-            else {
+            else {//실제로 data가 테이블에 추가 되는 것입니다.
                 V oldVal = null;
-                synchronized (f) {//<h3>특정 노드만 동기화</h3>
+                synchronized (f) {//특정 노드만 동기화 된것을 볼수있습니다.
                     if (tabAt(tab, i) == f) {
                         if (fh >= 0) {
                             binCount = 1;
@@ -178,32 +180,18 @@ EX) java8 ConcurrentHashMap putVal
                             }
                         }
                         else if (f instanceof TreeBin) {
-                            Node<K,V> p;
-                            binCount = 2;
-                            if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
-                                                           value)) != null) {
-                                oldVal = p.val;
-                                if (!onlyIfAbsent)
-                                    p.val = value;
-                            }
+                         .......
                         }
                     }
                 }
-                if (binCount != 0) {
-                    if (binCount >= TREEIFY_THRESHOLD)
-                        treeifyBin(tab, i);
-                    if (oldVal != null)
-                        return oldVal;
-                    break;
-                }
+                .......
             }
         }
-        addCount(1L, binCount);
-        return null;
+    .......
     }
 
 {% endhighlight %}
 
-putVal메소드 내부를 보면 노드(bucket) 하나마다 동기화가 적용 된것을 볼수 있다. 기존에 만들어진 노드를 사용 할 경우 동기화가 적용 된다. 
-<h4>segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 한번에 많은 Thread에서 접근 할 수 있도록 한것으로 생각왼다.</h4>
+putVal메소드 내부를 보면 노드(bucket) 하나마다 동기화가 적용 된것을 볼수 있습니다. 기존에 만들어진 노드를 사용 할 경우에만  동기화가 적용 되는 것을 볼 수 있습니다.
+결론적으로 큰 차이점은  <h4>segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 한번에 많은 Thread에서 접근 할 수 있도록 한것으로 분석됩니다.</h4>
 
