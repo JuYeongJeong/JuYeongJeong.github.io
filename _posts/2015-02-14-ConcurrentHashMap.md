@@ -68,7 +68,7 @@ java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 s
 
 <h4>EX) segment와 table의 관계</h4>
 <br>
-![1]({{ site.url }}/assets/segment.jpg)
+![1]({{ site.url }}assets/segment.jpg)
 <br>
 위의 그림처럼 segment내부에 table이 있습니다.
 
