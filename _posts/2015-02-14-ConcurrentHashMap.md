@@ -10,7 +10,7 @@ java8 ConcurrentHashMap
 
 <h1>ConcurrentHashMap</h1>
 ConcurrentHashMap 주로 동기화를 위해 사용되는 map입니다. 기존의 HashMap은 동기화 문제가 있었고, 이 문제를 해결 하기 위해서 HashTable이 나왔습니다. 
-하지만 Hashtable은 동기화에 있어서 메소드 단위라 매우 비 효율적인 문제점이 있었고 자바1.6버전부터는 동기화와 속도적인 측면을 모두 소화 해줄  ConcurrentHashMap이 나왔습니다.
+하지만 Hashtable은 동기화에 있어서 메소드 단위라 매우 비 효율적인 문제점이 있었고 자바1.6버전부터는 동기화와 속도적인 측면을 모두 소화 해줄  ConcurrentHashMap이 나왔습니다. 저는 1.8버전에서의 동기화적인 측면을 중점으로  개선사항에 대해서 알아보겠습니다.
 
 <h1>HashTable VS ConcurrentHashMap</h1>
 HashTable은 동기화를 하기 위해 아래와 같이 메소드 전체에 Lock이 걸려있다. 이러한 방법한 간편하고 안전하겠지만 많은 사용자가 있을 경우 사용성이 떨어지게 됩니다. HashTable을 참조하는 객체가 많을 수록 선점하기 위해 대기하는 시간이 늘어나게 됩니다.
@@ -50,7 +50,7 @@ EX) JAVA8 ConcurrentHashMap putAll Method
 
 java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 segment별로 HashEntry를 가지고 있는 것을 볼 수 있었습니다.
 
-EX) java7 ConcurrentHashMap constructor
+<h4>EX) java7 ConcurrentHashMap constructor<h4>
 {% highlight java %}
   public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {//concurrencyLevel은 원하는 segment의 사이즈 이고 default로는 16Size입니다.
 		..........
@@ -66,14 +66,14 @@ EX) java7 ConcurrentHashMap constructor
 {% endhighlight %}
 위의 코드를 보면 segment를 size만큼 만들고 그 내부에 hashEntry를 만드는 것을 볼 수 있습니다.
 
-EX) segment와 table의 관계
+<h4>EX) segment와 table의 관계</h4>
 <br>
 ![1]({{ site.url }}/assets/segment.jpg)
 <br>
 위의 그림처럼 segment내부에 table이 있습니다.
 
 
-Ex) segment put method
+<h4>Ex) segment put method</h4>
 {% highlight java %}
  final V put(K key, int hash, V value, boolean onlyIfAbsent) {
             HashEntry<K,V> node = tryLock() ? null :
@@ -124,7 +124,7 @@ Ex) segment put method
 
 JAVA8버전에서는 segment개념과 다소 변경된 것들이 있습니다.
 <br>
-EX) java8 ConcurrentHashMap constructor
+<h4>EX) java8 ConcurrentHashMap constructor</h4>
 {% highlight java %}
    public ConcurrentHashMap(int initialCapacity,
                              float loadFactor, int concurrencyLevel) {
@@ -140,7 +140,7 @@ EX) java8 ConcurrentHashMap constructor
 {% endhighlight %}
 java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있다. 자바8에서는 segment별로 HashEntry를 가지고 있는 것이 아니라는 것을 볼 수 있다. 사실상 concurrencyLevel은 table 사이즈 역할과 다름없다고 생각하면 됩니다.
 
-EX) java8 ConcurrentHashMap putVal
+<h4>EX) java8 ConcurrentHashMap putVal<h4>
 {% highlight java %}
   final V putVal(K key, V value, boolean onlyIfAbsent) {
         if (key == null || value == null) throw new NullPointerException();
