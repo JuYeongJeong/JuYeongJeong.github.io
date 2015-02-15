@@ -2,7 +2,7 @@
 layout: post
 title:  "java8 ConcurrentHashMap 소스 분석"
 date:   2015-02-14 20:00:00
-categories: jekyll,themes
+categories: java8,ConcurrentHashMap
 tags: omg,shit
 shortUrl: http://goo.gl/JhfZT9
 ---
