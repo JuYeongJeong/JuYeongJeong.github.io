@@ -8,11 +8,11 @@ shortUrl: http://goo.gl/JhfZT9
 ---
 java8 ConcurrentHashMap
 
-<h1>ConcurrentHashMap</h1>
+#ConcurrentHashMap
 ConcurrentHashMap 주로 동기화를 위해 사용되는 map입니다. 기존의 HashMap은 동기화 문제가 있었고, 이 문제를 해결 하기 위해서 HashTable이 나왔습니다. 
 하지만 Hashtable은 동기화에 있어서 메소드 단위라 매우 비 효율적인 문제점이 있었고 자바1.6버전부터는 동기화와 속도적인 측면을 모두 소화 해줄  ConcurrentHashMap이 나왔습니다. 저는 1.8버전에서의 동기화적인 측면을 중점으로  개선사항에 대해서 알아보겠습니다.
 
-<h1>HashTable VS ConcurrentHashMap</h1>
+#HashTable VS ConcurrentHashMap
 HashTable은 동기화를 하기 위해 아래와 같이 메소드 전체에 Lock이 걸려있다. 이러한 방법한 간편하고 안전하겠지만 많은 사용자가 있을 경우 사용성이 떨어지게 됩니다. HashTable을 참조하는 객체가 많을 수록 선점하기 위해 대기하는 시간이 늘어나게 됩니다.
 <br>
 EX) HashTable Lock Metode
@@ -46,16 +46,16 @@ EX) JAVA8 ConcurrentHashMap putAll Method
 
 위의 코드를 보시면 synchronized된 부분을 볼 수 있습니다. ConcurrentHashMap은 메소드 전체가 아닌 실제로 사용될 Node(bucket)에만 locking을 하여 여러 Thread에서 동시 접근이 가능하도록 하였습니다.
 
-<h1>JAVA8 ConcurrentHashMap과 이전 버전과의 차이점</h1>
+#JAVA8 ConcurrentHashMap과 이전 버전과의 차이점
 
 java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 segment별로 HashEntry를 가지고 있는 것을 볼 수 있었습니다.
 
-<h4>EX) java7 ConcurrentHashMap constructor<h4>
+EX) java7 ConcurrentHashMap constructor
 {% highlight java %}
   public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {//concurrencyLevel은 원하는 segment의 사이즈 이고 default로는 16Size입니다.
 		..........
 				
-		// 실제로 segment를 만드는 코드
+		##// 실제로 segment를 만드는 코드
         Segment<K,V> s0 =
             new Segment<K,V>(loadFactor, (int)(cap * loadFactor),
                              (HashEntry<K,V>[])new HashEntry[cap]);
@@ -66,13 +66,13 @@ java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 s
 {% endhighlight %}
 위의 코드를 보면 segment를 size만큼 만들고 그 내부에 hashEntry를 만드는 것을 볼 수 있습니다.
 
-<h4>EX) segment와 table의 관계</h4>
+EX) segment와 table의 관계
 <img src="http://juyeongjeong.github.io/assets/segment.jpg">
 <br>
-위의 그림처럼 segment내부에 table이 있습니다.
+위의 그림처럼 segment내부에 Hashtable(entry)이 있습니다.
 
 
-<h4>Ex) segment put method</h4>
+Ex) segment put method
 {% highlight java %}
  final V put(K key, int hash, V value, boolean onlyIfAbsent) {
             HashEntry<K,V> node = tryLock() ? null :
@@ -83,7 +83,7 @@ java8 이전 버전(java7)에서는 segments를 이용하여 locking을 하고 s
                 int index = (tab.length - 1) & hash;
                 HashEntry<K,V> first = entryAt(tab, index);
                 for (HashEntry<K,V> e = first;;) {
-                    if (e != null) {//기존에 node가 존재 할 경우 입니다.
+                    if (e != null) {##//기존에 node가 존재 할 경우 입니다.
                         K k;
                         if ((k = e.key) == key ||
                             (e.hash == hash && key.equals(k))) {
