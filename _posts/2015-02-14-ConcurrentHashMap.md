@@ -54,8 +54,7 @@ EX) java7 ConcurrentHashMap constructor
 {% highlight java %}
   public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {//concurrencyLevel은 원하는 segment의 사이즈 이고 default로는 16Size입니다.
 		..........
-				
-		##// 실제로 segment를 만드는 코드
+		// 실제로 segment를 만드는 코드
         Segment<K,V> s0 =
             new Segment<K,V>(loadFactor, (int)(cap * loadFactor),
                              (HashEntry<K,V>[])new HashEntry[cap]);
@@ -66,9 +65,8 @@ EX) java7 ConcurrentHashMap constructor
 {% endhighlight %}
 위의 코드를 보면 segment를 size만큼 만들고 그 내부에 hashEntry를 만드는 것을 볼 수 있습니다.
 
-EX) segment와 table의 관계
-<img src="http://juyeongjeong.github.io/assets/segment.jpg">
-<br>
+EX) segment와 table의 관계  
+<img src="http://juyeongjeong.github.io/assets/segment.jpg">  
 위의 그림처럼 segment내부에 Hashtable(entry)이 있습니다.
 
 
@@ -83,7 +81,7 @@ Ex) segment put method
                 int index = (tab.length - 1) & hash;
                 HashEntry<K,V> first = entryAt(tab, index);
                 for (HashEntry<K,V> e = first;;) {
-                    if (e != null) {##//기존에 node가 존재 할 경우 입니다.
+                    if (e != null) {//기존에 node가 존재 할 경우 입니다.
                         K k;
                         if ((k = e.key) == key ||
                             (e.hash == hash && key.equals(k))) {
