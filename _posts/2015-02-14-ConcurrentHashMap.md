@@ -190,7 +190,7 @@ EX) java8 ConcurrentHashMap putVal
     }
 {% endhighlight %}
 putVal메소드 내부를 보면 노드(bucket) 하나마다 synchronized가 적용 된것을 볼수 있습니다. 처음 생성된 노드는 동기화 대상에서 제외하고 기존에 만들어진 노드에 만 적용 되었습니다. 결론적으로 이번 버전과의 큰 차이점은 segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 훨씬더 많은 Thread에서 map에 접근 할 수 있도록 한것으로 분석됩니다.  
-ConcurrentMap에서 주로 호출 되는 내부  핵심 메소드인 replaceNode를 보겠습니다.
+ConcurrentMap에서 주로 호출 되는 내부  핵심 메소드인 replaceNode를 보겠습니다.  
 EX) java8 ConcurrentHashMap replaceNode
 {% highlight java %}
  final V replaceNode(Object key, V value, Object cv) {
@@ -211,4 +211,4 @@ EX) java8 ConcurrentHashMap replaceNode
     }
 
 {% endhighlight %}
-위에 코드에서도 replace할 노드에 접근 하기 전에는 항상 동기화가 되는 것을 볼 수 있었습니다. 그밖에 다른 메소드에서도 node에 접근 할 경우 동기화를 하여 thread-safety 한 것을 볼수 있습니다. 
+위에 코드에서도 노드에 접근 하기 전에는 항상 동기화가 되는 것을 볼 수 있었습니다. 그밖에 노드를 변경시키는 다른 메소드들에서도 동기화하여 thread-safety 한 것을 찾아 볼수 있습니다.  
