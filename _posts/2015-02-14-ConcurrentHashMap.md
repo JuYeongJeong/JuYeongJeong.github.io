@@ -211,4 +211,4 @@ EX) java8 ConcurrentHashMap replaceNode
     }
 
 {% endhighlight %}
-위에 코드에서도 노드에 접근 하기 전에는 항상 동기화가 되는 것을 볼 수 있었습니다. 그밖에 노드를 변경시키는 다른 메소드들에서도 동기화하여 thread-safety 한 것을 찾아 볼수 있습니다.  
+위에 코드에서도 노드에 접근 하기 전에는 항상 동기화가 되는 것을 볼 수 있었습니다. 그밖에 노드를 변경시키는 다른 메소드들에서도 동기화하여 thread-safety 한 것을 찾아 볼수 있습니다. ConcurrentHashmap을 소스코드를 분석하면서 multi-thread환경을 위해 api들이 변경 되어지고 있고 그 결과 객체 접근에 대한 대기가 줄어드는 것을 알 수 있었습니다.
