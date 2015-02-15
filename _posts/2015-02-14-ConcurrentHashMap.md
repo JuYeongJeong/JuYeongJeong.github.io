@@ -119,9 +119,8 @@ Ex) segment put method
 실제data가 put이 일어나는 segment put메소드를 보면 lock을 하는것을 볼 수 있습니다. 하나의 segment만 lock되기 때문에 다른 segment는 다른 thread에서 사용 가능하다는 것입니다.
 
 
-JAVA8버전에서는 segment개념과 다소 변경된 것들이 있습니다.
-<br>
-<h4>EX) java8 ConcurrentHashMap constructor</h4>
+###JAVA8버전에서는 segment개념과 다소 변경사항입니다.  
+EX) java8 ConcurrentHashMap constructor
 {% highlight java %}
    public ConcurrentHashMap(int initialCapacity,
                              float loadFactor, int concurrencyLevel) {
@@ -135,9 +134,9 @@ JAVA8버전에서는 segment개념과 다소 변경된 것들이 있습니다.
         this.sizeCtl = cap;
     }
 {% endhighlight %}
-java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있다. 자바8에서는 segment별로 HashEntry를 가지고 있는 것이 아니라는 것을 볼 수 있다. 사실상 concurrencyLevel은 table 사이즈 역할과 다름없다고 생각하면 됩니다.
-
-<h4>EX) java8 ConcurrentHashMap putVal<h4>
+java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있었습니다. 자바 8에서는 concurrencyLevel을 이용해서 segment를 만든것이 아닌 단지 하위 버전들을 위한 호환성을 위해 남겨 놓은 부분 이었습니다. 단지 table의 크기 역할뿐이었습니다.
+ 
+EX) java8 ConcurrentHashMap putVal
 {% highlight java %}
   final V putVal(K key, V value, boolean onlyIfAbsent) {
         if (key == null || value == null) throw new NullPointerException();
@@ -168,10 +167,11 @@ java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있다. 자바8
                                     oldVal = e.val;
                                     if (!onlyIfAbsent)
                                         e.val = value;
-                                    break;
+                                    break;//hash와 key가 동일 할경우 value를 변경 합니다.
                                 }
                                 Node<K,V> pred = e;
                                 if ((e = e.next) == null) {
+                            //hash만 같은 경우 next 새로운 노드를 추가합니다.
                                     pred.next = new Node<K,V>(hash, key,
                                                               value, null);
                                     break;
@@ -188,9 +188,27 @@ java7 부분 보다 훨씬 코드량이 줄어 든것을 볼 수 있다. 자바8
         }
     .......
     }
+{% endhighlight %}
+putVal메소드 내부를 보면 노드(bucket) 하나마다 synchronized가 적용 된것을 볼수 있습니다. 처음 생성된 노드는 동기화 대상에서 제외하고 기존에 만들어진 노드에 만 적용 되었습니다. 결론적으로 이번 버전과의 큰 차이점은 segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 훨씬더 많은 Thread에서 map에 접근 할 수 있도록 한것으로 분석됩니다.  
+ConcurrentMap에서 주로 호출 되는 내부  핵심 메소드인 replaceNode를 보겠습니다.
+EX) java8 ConcurrentHashMap replaceNode
+{% highlight java %}
+ final V replaceNode(Object key, V value, Object cv) {
+        int hash = spread(key.hashCode());
+        for (Node<K,V>[] tab = table;;) {
+            Node<K,V> f; int n, i, fh;
+            if()
+            else if()
+            .......
+            else {
+                V oldVal = null;
+                boolean validated = false;
+                synchronized (f) { 
+                //노드에 접근을 위해 동기화가 되는 것을 볼 수 있습니다.
+                   .. TODO replace 
+                }
+             .....
+    }
 
 {% endhighlight %}
-
-putVal메소드 내부를 보면 노드(bucket) 하나마다 동기화가 적용 된것을 볼수 있습니다. 기존에 만들어진 노드를 사용 할 경우에만  동기화가 적용 되는 것을 볼 수 있습니다.
-결론적으로 큰 차이점은 segment을 각각의 node에 1:1 단위로 맵핑시켜 이전 버전보다 한번에 많은 Thread에서 접근 할 수 있도록 한것으로 분석됩니다.
-
+위에 코드에서도 replace할 노드에 접근 하기 전에는 항상 동기화가 되는 것을 볼 수 있었습니다. 그밖에 다른 메소드에서도 node에 접근 할 경우 동기화를 하여 thread-safety 한 것을 볼수 있습니다. 
