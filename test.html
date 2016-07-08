@@ -22,34 +22,16 @@ var checkOS = {
 			
 		},
 		
-		callAppTel: function() {
-			 
-				if(checkOS.isAndroid){
-					try {
-						window.AppInterface.goTel('01074017106');
-					} catch ( err ){
-						alert(err);
-					}
-				}else if(checkOS.isIOS){
-					document.location = "unioneapp:goTel:01074017106";
-				}
+		callAppTelAOS: function() {
+			 window.AppInterface.goTel('01074017106');
+				
 		
 		},
-		goAddress: function(){
-			if(checkOS.isAndroid){
-				window.AppInterface.goAddress('seoul');
-			}
+		callAppTelIOS: function() {
+			document.location = "unioneapp:goTel:01074017106";
 		},
-		goBack: function(){
-			if(checkOS.isAndroid){
-				window.AppInterface.goBack();
-			}
-		},
-		goHomepage: function(){
-			if(checkOS.isAndroid){
-				window.AppInterface.goHomepage('http://www.naver.com');
-			}
-		}
+			
+	
 
 	};
 
@@ -60,10 +42,7 @@ var checkOS = {
 <a href="unione://webview_open?url=http://www.naver.com">내부 브라우저</a><br/>
 <a target="_blank" href="http://www.naver.com">외부 브라우저</a><br/>
 <a href="http://www.naver.com">웹뷰 이동</a><br/>
-<a href="javascript:checkOS.callAppTel()">전화 하기</a><br/>
-<a href="unione://someaction">앱실행하기.</a><br/>
-<a href="javascript:checkOS.goAddress()">서울지도오픈</a><br/>
-<a href="javascript:checkOS.goBack()">뒤로가기</a><br/>
-<a href="javascript:checkOS.goHomepage()">네이버열기</a><br/>
+<a href="javascript:checkOS.callAppTelAOS()">AOS전화 하기</a><br/>
+<a href="javascript:checkOS.callAppTelIOS()">IOS전화 하기</a><br/>
 </body>
 </html>
